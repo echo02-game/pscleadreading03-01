@@ -5,295 +5,369 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>普通話水平測試朗讀作品3號</title>
     <style>
-        :root {
-            --theme-color: #4A90E2;
-            --bg-color: #f5f7fa;
-            --text-color: #333;
-            --pinyin-font: 'Calibri', sans-serif;
-            --main-font: 'Yuanti SC', 'YouYuan', 'Microsoft YaHei', 'SimHei', sans-serif;
-            --star-inactive: #d1d1d1;
-            --star-active: #f1c40f;
-            --highlight-bg: #fff9c4;
-        }
-
+        /* 字體設置：圓體優先 */
         body {
-            font-family: var(--main-font);
+            font-family: "Yuanti SC", "YouYuan", "Microsoft YaHei", "Rounded Mplus 1c", sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            -webkit-font-smoothing: antialiased;
+            color: #333;
+            /* 防止iOS點擊高亮 */
+            -webkit-tap-highlight-color: transparent;
+            /* 給底部軌道留空間 */
+            padding-bottom: 120px; 
         }
 
-        /* Top Header */
-        .header {
+        /* 拼音字體 - 使用 Calibri Regular */
+        .pinyin {
+            font-family: "Calibri", sans-serif;
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+
+        /* 漢字字體 */
+        .hanzi {
+            font-size: 1.4em;
+            font-weight: bold;
+            line-height: 1.5;
+            color: #2c3e50;
+            letter-spacing: 1px;
+        }
+
+        /* 頂部固定標題和版權聲明 */
+        #header-container {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             z-index: 100;
             text-align: right;
+            box-sizing: border-box;
         }
 
-        .page-title {
-            font-size: 1.1rem;
+        #page-title {
+            font-size: 1.2em;
             font-weight: bold;
             color: #2c3e50;
-            margin: 0;
+            margin-bottom: 8px;
         }
 
-        .disclaimer {
-            font-size: 0.75rem;
-            color: #888;
-            margin-top: 4px;
-            line-height: 1.2;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 800px;
-            margin: 100px auto 120px; /* Top margin for header, Bottom for tracker */
-            padding: 20px;
-        }
-
-        /* Login Screen */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-        }
-
-        .login-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--theme-color);
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: var(--main-font);
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        .btn-enter {
-            background: var(--theme-color);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-family: var(--main-font);
-        }
-
-        .error-msg {
-            color: #e74c3c;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            min-height: 1.2em;
-        }
-
-        /* Content List */
-        .sentence-item {
-            background: white;
-            margin-bottom: 15px;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            transition: background-color 0.3s;
-        }
-
-        .sentence-item.played {
-            background-color: var(--highlight-bg);
-        }
-
-        .pinyin {
-            font-family: var(--pinyin-font);
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 5px;
+        #disclaimer {
+            font-size: 0.75em;
+            color: #999;
             line-height: 1.4;
+            max-width: 100%;
+            word-wrap: break-word;
         }
 
-        .chinese-text {
-            font-size: 1.4rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-            line-height: 1.5;
+        /* 主內容區域 */
+        #main-content {
+            /* 默認頂部內邊距，會由JS動態調整 */
+            padding: 140px 20px 40px 20px; 
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .controls {
+        /* 句子容器 */
+        .sentence-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            border-left: 5px solid transparent;
+        }
+        
+        /* 播放時的樣式 */
+        .sentence-container.playing {
+            border: 2px solid #FFD700;
+            background-color: #fffcf0;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+        }
+
+        /* 播放控制按鈕行 */
+        .controls-row {
+            margin-top: 15px;
             display: flex;
             align-items: center;
         }
 
+        /* 播放按鈕 */
         .play-btn {
-            background: var(--theme-color);
+            background-color: #4CAF50;
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
+            gap: 8px;
+            transition: all 0.2s;
+            outline: none;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
+            font-family: inherit;
         }
 
-        .play-btn.playing {
-            background: #e74c3c;
-        }
-
-        /* Reward Tracker (Bottom) */
-        .tracker-container {
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn.paused { background-color: #FF9800; box-shadow: 0 4px 10px rgba(255, 152, 0, 0.2); }
+        
+        /* 獎勵機制：底部軌道容器 */
+        #reward-track-container {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: white;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            height: 100px;
+            background: #fff;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
             z-index: 90;
             display: flex;
-            justify-content: center;
             align-items: center;
-            overflow-x: auto;
+            justify-content: center; 
         }
 
-        .tracker-track {
+        /* 滾動區域 */
+        #track-scroll-area {
             display: flex;
             align-items: center;
+            justify-content: center; /* 內容少時居中 */
+            overflow-x: auto; /* 允許橫向滾動 */
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS流暢滾動 */
             padding: 0 20px;
-            gap: 5px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            scrollbar-width: none; /* Firefox隱藏滾動條 */
+            -ms-overflow-style: none; /* IE/Edge隱藏滾動條 */
+        }
+        #track-scroll-area::-webkit-scrollbar { display: none; /* Chrome隱藏滾動條 */ }
+
+        /* 實際軌道內容 */
+        #reward-track {
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* 防止換行 */
+            padding-right: 20px; /* 給最右邊留點空隙 */
+        }
+
+        .star-wrapper {
+            display: flex;
+            align-items: center;
         }
 
         .star {
-            font-size: 1.2rem;
-            color: var(--star-inactive);
-            transition: all 0.5s;
+            font-size: 28px;
+            color: #e0e0e0; /* 空心灰色 */
+            margin: 0 2px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            line-height: 1;
         }
 
         .star.active {
-            color: var(--star-active);
-            text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
-            transform: scale(1.1);
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            transform: scale(1.3);
         }
 
+        .track-line {
+            height: 5px;
+            width: 15px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            transition: background 0.4s ease;
+        }
+        
+        .track-line.active { background: #FFD700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }
+
         .trophy {
-            font-size: 1.8rem;
-            color: var(--star-inactive);
-            margin-left: 10px;
-            transition: all 0.8s;
+            font-size: 42px;
+            color: #e0e0e0;
+            margin-left: 5px; /* 緊貼最後的連接線 */
+            transition: all 0.6s;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            line-height: 1;
         }
 
         .trophy.active {
-            color: #f39c12;
-            filter: drop-shadow(0 0 8px #f39c12);
+            color: #FFD700;
+            filter: grayscale(0%);
+            opacity: 1;
+            filter: drop-shadow(0 0 10px gold);
             animation: bounce 1s infinite alternate;
         }
 
         @keyframes bounce {
             from { transform: translateY(0); }
-            to { transform: translateY(-5px); }
+            to { transform: translateY(-8px); }
         }
 
-        /* Completion Area */
-        .completion-area {
+        /* 登錄遮罩層 */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0f4f8;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: "Yuanti SC", "YouYuan", sans-serif;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
-            margin-top: 40px;
-            display: none; /* Hidden by default */
+            width: 85%;
+            max-width: 320px;
         }
 
-        .btn-finish {
-            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border 0.3s;
+            text-align: center;
+            outline: none;
+        }
+        
+        .login-input:focus { border-color: #4CAF50; }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .login-btn:active { background: #43A047; }
+
+        #login-msg {
+            color: #ff4d4f;
+            font-size: 14px;
+            height: 20px;
+            margin-top: 8px;
+        }
+
+        /* 完成按鈕區域 */
+        #completion-area {
+            text-align: center;
+            margin-top: 50px;
+            padding-bottom: 20px;
+        }
+
+        #finish-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            color: #999;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: not-allowed;
+            transition: all 0.3s;
+            display: inline-block;
+            box-shadow: none;
+        }
+
+        #finish-btn.active {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            color: #666;
+            text-decoration: none;
+            font-size: 1em;
+            gap: 10px;
+            padding: 12px 25px;
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .home-link:active { transform: scale(0.95); }
+
+        /* 彈窗 */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-btn {
+            background: #4CAF50;
             color: white;
             border: none;
             padding: 12px 30px;
             border-radius: 25px;
-            font-size: 1.1rem;
+            margin-top: 25px;
+            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
-            font-family: var(--main-font);
-            margin-bottom: 20px;
-            transition: transform 0.2s;
-        }
-
-        .btn-finish:active {
-            transform: scale(0.95);
-        }
-
-        .home-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        .home-icon {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            width: 80%;
-            max-width: 350px;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
 
         @keyframes popIn {
@@ -301,623 +375,616 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal h3 { color: var(--theme-color); margin-top: 0; }
-        .modal-close {
-            margin-top: 20px;
-            padding: 8px 25px;
-            background: #ddd;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-family: var(--main-font);
-        }
-
-        /* Developer Mode */
-        #dev-toggle {
+        /* 開發者模式 */
+        #dev-trigger {
             position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 200;
-            font-size: 1.2rem;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            color: #ccc; /* 不起眼 */
             cursor: pointer;
+            z-index: 101;
+            display: none; /* JS控制顯示 */
             opacity: 0.3;
-            filter: grayscale(100%);
-            display: none; /* Controlled by JS */
+            transition: opacity 0.3s;
         }
         
+        #dev-trigger:hover { opacity: 0.8; }
+        
         #dev-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 250px;
-            background: rgba(0,0,0,0.9);
-            color: #0f0;
-            z-index: 3000;
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: monospace;
             display: none;
-            overflow-y: auto;
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background: rgba(0,0,0,0.95);
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 12px;
+            z-index: 4000;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 30px rgba(0,255,0,0.1);
+            text-align: left;
         }
 
-        .dev-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
+        .dev-info { font-size: 14px; margin-bottom: 10px; color: #fff; }
+        .dev-highlight { color: #ffff00; font-weight: bold; }
+        
         .dev-btn {
             background: #333;
-            color: white;
+            color: #fff;
             border: 1px solid #555;
-            padding: 5px 10px;
+            padding: 8px 15px;
+            margin: 5px 5px 5px 0;
             cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
         }
-
-        .active-sentence-highlight {
-            border: 2px solid #e74c3c;
-        }
+        .dev-btn:hover { background: #555; }
+        .dev-btn.recording { background: #d32f2f; border-color: #f44336; animation: flash 1s infinite; }
+        
+        @keyframes flash { 50% { opacity: 0.5; } }
 
     </style>
 </head>
 <body>
 
-    <!-- Audio Element -->
-    <audio id="main-audio" preload="auto">
-        <source src="pscleadreading03.mp4" type="audio/mp4">
+    <!-- 隱藏的音頻播放器 -->
+    <audio id="audio-player" preload="metadata">
+        <source src="pscleadreading03.mp3" type="audio/mpeg">
         您的瀏覽器不支持音頻播放。
     </audio>
 
-    <!-- Dev Toggle -->
-    <div id="dev-toggle" title="開發者模式">🛠️</div>
+    <!-- 登錄界面 -->
+    <div id="login-overlay">
+    <!-- 新增的作品編號標題 -->
+    <h2 style="font-size: 28px; color: #2c3e50; margin-bottom: 10px; font-weight: bold;">作品3號</h2>
+    <h3 style="font-size: 18px; color: #666; margin-bottom: 25px; font-weight: normal;">開始練習</h3>
+    <div class="login-box">
+        <input type="text" id="username" class="login-input" placeholder="請輸入您的名字" autocomplete="off">
+        <input type="password" id="password" class="login-input" placeholder="請輸入密碼">
+        <div id="login-msg"></div>
+        <button class="login-btn" onclick="checkLogin()">進入</button>
+    </div>
+</div>
 
-    <!-- Login Screen -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 class="login-title">開始練習</h2>
-            <div class="input-group">
-                <input type="text" id="username" placeholder="請輸入您的名字">
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="請輸入密碼">
-            </div>
-            <div class="error-msg" id="login-error"></div>
-            <button class="btn-enter" id="btn-login">進入</button>
+    <!-- 頂部標題區 -->
+    <div id="header-container">
+        <div id="dev-trigger" onclick="toggleDevPanel()">🛠️</div>
+        <div id="page-title">普通話水平測試朗讀作品3號</div>
+        <div id="disclaimer">
+            本網頁拼音均由AI生成，標準注音請參考《普通話水平測試實施綱要（2021年版）》。<br>
+            錄音僅供參考。網頁僅供機構内部使用。普通話培訓測試中心版權所有。
         </div>
     </div>
 
-    <!-- Header -->
-    <div class="header">
-        <div class="page-title">普通話水平測試朗讀作品3號</div>
-        <div class="disclaimer">本網頁拼音均由AI生成，標準注音請參考《普通話水平測試實施綱要（2021年版）》。錄音僅供參考。網頁僅供VTC内部使用。職業訓練局普通話培訓測試中心版權所有。</div>
-    </div>
+    <!-- 主內容區 -->
+    <div id="main-content">
+        <!-- 句子將通過 JS 渲染 -->
+        <div id="sentences-wrapper"></div>
 
-    <!-- Main Content -->
-    <div class="container" id="content-container">
-        <!-- Sentences will be injected here by JS -->
-        
-        <div class="completion-area" id="completion-area">
-            <button class="btn-finish" id="btn-finish">我已完成跟讀練習啦！</button>
+        <!-- 完成按鈕 -->
+        <div id="completion-area">
+            <button id="finish-btn" onclick="handleFinish()">我已完成跟讀練習啦！</button>
             <a href="https://echo02-game.github.io/pscleadreading-hub/" class="home-link">
-                <span class="home-icon">📖</span>
-                <span>回主目錄</span>
+                <span style="font-size: 20px;">📖</span> 回主目錄
             </a>
         </div>
     </div>
 
-    <!-- Reward Tracker -->
-    <div class="tracker-container">
-        <div class="tracker-track" id="tracker-track">
-            <!-- Stars will be injected here -->
+    <!-- 底部獎勵軌道 -->
+    <div id="reward-track-container">
+        <div id="track-scroll-area">
+            <div id="reward-track">
+                <!-- 星星和獎杯由 JS 生成 -->
+            </div>
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal">
-            <h3>太棒啦！</h3>
-            <p>打卡信息已複製，快去分享努力後的喜悅吧！</p>
-            <button class="modal-close" onclick="document.getElementById('success-modal').style.display='none'">關閉</button>
+    <!-- 成功彈窗 -->
+    <div id="modal">
+        <div class="modal-content">
+            <div style="font-size: 50px; margin-bottom: 15px;">🎉</div>
+            <h3 style="margin: 10px 0; color: #2c3e50; font-size: 24px;">太棒啦！</h3>
+            <p style="color: #666; font-size: 16px; line-height: 1.5;">打卡信息已複製，<br>快去分享努力後的喜悅吧！</p>
+            <button class="modal-btn" onclick="closeModal()">關閉</button>
         </div>
     </div>
 
-    <!-- Dev Panel -->
+    <!-- 開發者面板 -->
     <div id="dev-panel">
-        <div class="dev-controls">
-            <button class="dev-btn" id="start-rec">開始錄製模式</button>
-            <button class="dev-btn" id="mark-next">標記下一句 (Space)</button>
-            <button class="dev-btn" id="export-json">複製 JSON</button>
-            <span>當前: <span id="dev-current-idx">-1</span></span>
+        <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+            <strong>開發者時間軸標記工具</strong>
         </div>
-        <div id="dev-log"></div>
+        <div class="dev-info">當前時間: <span id="dev-time" class="dev-highlight">0.00</span>s</div>
+        <div class="dev-info">正在錄製: 第 <span id="dev-index" class="dev-highlight">0</span> 句</div>
+        <div class="dev-info" id="dev-text" style="color: #aaa; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">準備就緒...</div>
+        <div style="margin-top: 15px;">
+            <button class="dev-btn" id="btn-record-start" onclick="startDevRecording()">▶ 開始錄製模式</button>
+            <button class="dev-btn" onclick="markNextSentence()">🚩 標記下一句 (Space)</button>
+            <button class="dev-btn" onclick="exportJson()">📋 複製 JSON</button>
+        </div>
     </div>
 
     <script>
-        // --- Configuration ---
-        const PASSWORD = "vtcpsc";
-        // 注意：這裡的 start 和 end 是時間（秒）。
-        // 由於我沒有實際的音頻時間軸，這裡的數據全部設置為 0 或估算值。
-        // 請使用「開發者模式」自行錄製生成準確的 JSON 並替換此處。
-        let sentenceData = [
+        // 用戶輸入的名字
+        let currentUser = "";
+        
+var sentenceData = [
     {
-        "text": "燕子去了，有再來的時候；",
-        "pinyin": "Yànzi qùle, yǒu zàilái de shíhòu;",
+        "text": "燕子去了，有再來的時候；楊柳枯了，有再青的時候；桃花謝了，有再開的時候。",
+        "pinyin": "Yànzi qù le, yǒu zài lái de shíhou; Yángliǔ kū le, yǒu zài qīng de shíhou; Táohuā xiè le, yǒu zài kāi de shíhou.",
         "start": 0,
-        "end": 9.35
-    },
-    {
-        "text": "楊柳枯了，有再青的時候；",
-        "pinyin": "Yángliǔ kūle, yǒu zài qīng de shíhòu;",
-        "start": 9.35,
-        "end": 14.16
-    },
-    {
-        "text": "桃花謝了，有再開的時候。",
-        "pinyin": "Táohuā xièle, yǒu zài kāi de shíhòu.",
-        "start": 14.16,
-        "end": 18.78
+        "duration": 19.18
     },
     {
         "text": "但是，聰明的，你告訴我，我們的日子為什麼一去不復返呢？",
-        "pinyin": "Dànshì, cōngmíng de, nǐ gàosù wǒ, wǒmen de rìzi wèishéme yīqùbùfùfǎn ne?",
-        "start": 18.78,
-        "end": 28.43
+        "pinyin": "Dànshì, cōngmíng de, nǐ gàosu wǒ, wǒmen de rìzi wèishénme yíqù bù fùfǎn ne?",
+        "start": 19.18,
+        "duration": 9.39
     },
     {
         "text": "——是有人偷了他們罷：那是誰？",
-        "pinyin": "——Shì yǒurén tōule tāmen ba: nà shì shéi?",
-        "start": 28.43,
-        "end": 34.08
+        "pinyin": "— shì yǒurén tōu le tāmen ba: nà shì shuí?",
+        "start": 28.57,
+        "duration": 5.57
     },
     {
         "text": "又藏在何處呢？",
-        "pinyin": "Yòu cáng zài héchù ne?",
-        "start": 34.08,
-        "end": 37.13
+        "pinyin": "Yòu cáng zài hé chù ne?",
+        "start": 34.14,
+        "duration": 3.23
     },
     {
         "text": "是他們自己逃走了罷：現在又到了哪裏呢？",
-        "pinyin": "Shì tāmen zìjǐ táozǒule ba: xiànzài yòu dàole nǎlǐ ne?",
-        "start": 37.13,
-        "end": 44.65
+        "pinyin": "Shì tāmen zìjǐ táozǒu le ba: xiànzài yòu dào le nǎlǐ ne?",
+        "start": 37.37,
+        "duration": 7.34
     },
     {
-        "text": "去的儘管去了，來的儘管來着；",
-        "pinyin": "Qù de jǐnguǎn qùle, lái de jǐnguǎn láizhe;",
-        "start": 44.65,
-        "end": 52.51
-    },
-    {
-        "text": "去來的中間，又怎樣地匆匆呢？",
-        "pinyin": "Qù lái de zhōngjiān, yòu zěnyàng de cōngcōng ne?",
-        "start": 52.51,
-        "end": 57.49
+        "text": "去的儘管去了，來的儘管來着；去來的中間，又怎樣地匆匆呢？",
+        "pinyin": "Qù de jǐnguǎn qù le, lái de jǐnguǎn lái zhe; qùlái de zhōngjiān, yòu zěnyàng de cōngcōng ne?",
+        "start": 44.71,
+        "duration": 12.87
     },
     {
         "text": "早上我起來的時候，小屋裏射進兩三方斜斜的太陽。",
-        "pinyin": "Zǎoshang wǒ qǐlái de shíhòu, xiǎowū lǐ shè jìn liǎng sān fāng xiéxié de tàiyáng.",
-        "start": 57.49,
-        "end": 66.1
+        "pinyin": "Zǎoshang wǒ qǐlái de shíhou, xiǎowū lǐ shè jìn liǎng sān fāng xiéxié de tàiyáng.",
+        "start": 57.58,
+        "duration": 8.53
     },
     {
-        "text": "太陽他有腳啊，輕輕悄悄地挪移了；",
-        "pinyin": "Tàiyáng tā yǒu jiǎo a, qīngqīng qiāoqiāo de nuóyíle;",
-        "start": 66.1,
-        "end": 72.53
+        "text": "太陽他有腳啊，輕輕悄悄地挪移了；我也茫茫然跟着旋轉。",
+        "pinyin": "Tàiyáng tā yǒu jiǎo a, qīngqīng qiāoqiāo de nuóyí le; wǒ yě mángmángrán gēnzhe xuánzhuǎn.",
+        "start": 66.11,
+        "duration": 10.51
     },
     {
-        "text": "我也茫茫然跟着旋轉。",
-        "pinyin": "Wǒ yě mángmángrán gēnzhe xuánzhuǎn.",
-        "start": 72.53,
-        "end": 76.44
+        "text": "於是——洗手的時候，日子從水盆裏過去；吃飯的時候，日子從飯碗裏過去；默默時，便從凝然的雙眼前過去。",
+        "pinyin": "Yúshì — xǐshǒu de shíhou, rìzi cóng shuǐpén lǐ guòqù; chīfàn de shíhou, rìzi cóng fànwǎn lǐ guòqù; mòmò shí, biàn cóng níngrán de shuāngyǎn qián guòqù.",
+        "start": 76.62,
+        "duration": 19.39
     },
     {
-        "text": "於是——洗手的時候，日子從水盆裏過去；",
-        "pinyin": "Yúshì——xǐshǒu de shíhòu, rìzi cóng shuǐpén lǐ guòqù;",
-        "start": 76.44,
-        "end": 83.85
-    },
-    {
-        "text": "吃飯的時候，日子從飯碗裏過去；",
-        "pinyin": "Chīfàn de shíhòu, rìzi cóng fànwǎn lǐ guòqù;",
-        "start": 83.85,
-        "end": 89.75
-    },
-    {
-        "text": "默默時，便從凝然的雙眼前過去。",
-        "pinyin": "Mòmò shí, biàn cóng níngrán de shuāngyǎn qián guòqù.",
-        "start": 89.75,
-        "end": 95.95
-    },
-    {
-        "text": "我覺察他去的匆匆了，伸出手遮挽時，他又從遮挽着的手邊過去；",
-        "pinyin": "Wǒ juéchá tā qù de cōngcōngle, shēnchūshǒu zhēwǎn shí, tā yòu cóng zhēwǎn zhe de shǒubiān guòqù;",
-        "start": 95.95,
-        "end": 108.03
-    },
-    {
-        "text": "天黑時，我躺在床上，他便伶伶俐俐地從我身上跨過，從我腳邊飛去了。",
-        "pinyin": "Tiānhēi shí, wǒ tǎng zài chuángshàng, tā biàn línglínglìlì de cóng wǒ shēnshang kuàguò, cóng wǒ jiǎobiān fēiqùle.",
-        "start": 108.03,
-        "end": 121.79
+        "text": "我覺察他去的匆匆了，伸出手遮挽時，他又從遮挽着的手邊過去；天黑時，我躺在床上，他便伶伶俐俐地從我身上跨過，從我腳邊飛去了。",
+        "pinyin": "Wǒ juéchá tā qù de cōngcōng le, shēn chū shǒu zhēwǎn shí, tā yòu cóng zhēwǎn zhe de shǒu biān guòqù; tiānhēi shí, wǒ tǎng zài chuáng shàng, tā biàn línglíng lìlì de cóng wǒ shēnshang kuà guò, cóng wǒ jiǎobiān fēi qù le.",
+        "start": 96.02,
+        "duration": 25.9
     },
     {
         "text": "等我睜開眼和太陽再見，這算又溜走了一日。",
-        "pinyin": "Děng wǒ zhēngkāiyǎn hé tàiyáng zàijiàn, zhè suàn yòu liūzǒule yīrì.",
-        "start": 121.79,
-        "end": 130.16
+        "pinyin": "Děng wǒ zhēng kāi yǎn hé tàiyáng zàijiàn, zhè suàn yòu liū zǒu le yī rì.",
+        "start": 121.92,
+        "duration": 8.24
     },
     {
         "text": "我掩着面嘆息，但是新來的日子的影兒又開始在嘆息裏閃過了。",
-        "pinyin": "Wǒ yǎnzhe miàn tànxī, dànshì xīnlái de rìzi de yǐnger yòu kāishǐ zài tànxī lǐ shǎnguòle.",
+        "pinyin": "Wǒ yǎn zhe miàn tànxī, dànshì xīn lái de rìzi de yǐngér yòu kāishǐ zài tànxī lǐ shǎnguò le.",
         "start": 130.16,
-        "end": 141.01
+        "duration": 10.79
     },
     {
         "text": "在逃去如飛的日子裏，在千門萬戶的世界裏的我能做些什麼呢？",
-        "pinyin": "Zài táoqù rú fēi de rìzi lǐ, zài qiānmén wànhù de shìjiè lǐ de wǒ néng zuò xiē shénme ne?",
-        "start": 141.01,
-        "end": 150.98
+        "pinyin": "Zài táo qù rú fēi de rìzi lǐ, zài qiānmén wànhù de shìjiè lǐ de wǒ néng zuò xiē shénme ne?",
+        "start": 140.95,
+        "duration": 10.22
     },
     {
-        "text": "衹有徘徊罷了，衹有匆匆罷了；",
-        "pinyin": "Zhǐyǒu páihuái bàle, zhǐyǒu cōngcōng bàle;",
-        "start": 150.98,
-        "end": 156.68
+        "text": "衹有徘徊罷了，衹有匆匆罷了；在八千多日的匆匆裏，除徘徊外，又剩些什麼呢？",
+        "pinyin": "Zhǐyǒu páihuái bà le, zhǐyǒu cōngcōng bà le; zài bā qiān duō rì de cōngcōng lǐ, chú páihuái wài, yòu shèng xiē shénme ne?",
+        "start": 151.17,
+        "duration": 13.57
     },
     {
-        "text": "在八千多日的匆匆裏，除徘徊外，又剩些什麼呢？",
-        "pinyin": "Zài bāqiān duō rì de cōngcōng lǐ, chú páihuái wài, yòu shèng xiē shénme ne?",
-        "start": 156.68,
-        "end": 164.57
-    },
-    {
-        "text": "過去的日子如輕煙，被微風吹散了，如薄霧，被初陽蒸融了；",
-        "pinyin": "Guòqù de rìzi rú qīngyān, bèi wēifēng chuīsànle, rú bówù, bèi chūyáng zhēngróngle;",
-        "start": 164.57,
-        "end": 177.02
-    },
-    {
-        "text": "我留着些什麼痕跡呢？",
-        "pinyin": "Wǒ liúzhe xiē shénme hénjī ne?",
-        "start": 177.02,
-        "end": 181.05
+        "text": "過去的日子如輕煙，被微風吹散了，如薄霧，被初陽蒸融了；我留着些什麼痕跡呢？",
+        "pinyin": "Guòqù de rìzi rú qīngyān, bèi wēifēng chuīsàn le, rú bówù, bèi chūyáng zhēngróng le; wǒ liú zhe xiē shénme hénjì ne?",
+        "start": 164.74,
+        "duration": 16.31
     },
     {
         "text": "我何曾留着像游絲樣的痕跡呢？",
-        "pinyin": "Wǒ hécéng liúzhe xiàng yóusī yàng de hénjī ne?",
+        "pinyin": "Wǒ hécéng liú zhe xiàng yóusī yàng de hénjì ne?",
         "start": 181.05,
-        "end": 186.17
+        "duration": 5.17
     },
     {
-        "text": "我赤裸裸來到這世界，轉眼間也將赤裸裸的回去罷？",
-        "pinyin": "Wǒ chìluǒluǒ láidào zhè shìjiè, zhuǎnyǎn jiān yě jiāng chìluǒluǒ de huíqù ba?",
-        "start": 186.17,
-        "end": 194.26
+        "text": "我赤裸裸//來到這世界，轉眼間也將赤裸裸的回去罷？",
+        "pinyin": "Wǒ chìluǒluǒ // lái dào zhè shìjiè, zhuǎnyǎn jiān yě jiāng chìluǒluǒ de huíqù ba?",
+        "start": 186.21,
+        "duration": 7.87
     }
 ];
 
-        // --- State ---
-        let currentAudio = document.getElementById('main-audio');
-        let playingIndex = -1;
-        let isPaused = false;
-        let userName = "";
-        let progress = new Array(sentenceData.length).fill(false);
-        let checkTimeInterval = null;
+      // 狀態變量
+        let playingIndex = -1; // 當前播放句子的索引
+        let isPlaying = false;
+        let playedSentences = new Array(sentenceData.length).fill(false);
+        let audioPlayer = document.getElementById('audio-player');
+        let checkInterval = null;
 
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initLogin();
-            detectWindows();
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderContent();
+            renderRewardTrack();
+
+            // 檢測 Windows 系統來顯示開發者工具按鈕
+            // 同時檢查 platform 和 userAgent 以提高準確性
+            const isWindows = (navigator.platform.indexOf('Win') > -1) || 
+                              (navigator.userAgent.indexOf('Windows') > -1);
+
+            if (isWindows) {
+                document.getElementById('dev-trigger').style.display = 'block';
+            }
+
+            // 監聽登錄回車
+            document.getElementById('password').addEventListener("keypress", function(event) {
+                if (event.key === "Enter") checkLogin();
+            });
+            document.getElementById('username').addEventListener("keypress", function(event) {
+                if (event.key === "Enter") document.getElementById('password').focus();
+            });
+
+            // 初始化時調用一次調整
+            adjustPadding();
         });
 
-        function detectWindows() {
-            // Check if user is on Windows to show Dev Toggle
-            if (navigator.platform.indexOf('Win') > -1 || navigator.userAgent.indexOf('Windows') > -1) {
-                document.getElementById('dev-toggle').style.display = 'block';
+        // 窗口大小改變時，重新計算頂部 padding，確保不遮擋
+        window.addEventListener('resize', adjustPadding);
+
+        function adjustPadding() {
+            const header = document.getElementById('header-container');
+            const content = document.getElementById('main-content');
+            if (header && content) {
+                // 獲取 header 實際高度，並額外加 25px 的呼吸空間
+                const headerHeight = header.offsetHeight;
+                content.style.paddingTop = (headerHeight + 25) + 'px';
             }
         }
 
-        // --- Login Logic ---
-        function initLogin() {
-            const btnLogin = document.getElementById('btn-login');
-            const pwdInput = document.getElementById('password');
-            const nameInput = document.getElementById('username');
-
-            const attemptLogin = () => {
-                const pwd = pwdInput.value;
-                const name = nameInput.value.trim();
-                
-                if (pwd === PASSWORD) {
-                    if(name === "") {
-                         document.getElementById('login-error').textContent = "請輸入名字";
-                         return;
-                    }
-                    userName = name;
-                    document.getElementById('login-screen').style.display = 'none';
-                    initApp();
-                } else {
-                    document.getElementById('login-error').textContent = "請輸入正確密碼";
-                }
-            };
-
-            btnLogin.addEventListener('click', attemptLogin);
-            pwdInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
-        }
-
-        // --- App Logic ---
-        function initApp() {
-            renderSentences();
-            renderTracker();
-            setupCompletion();
-            setupDevMode(); // Initialize developer mode listeners
-        }
-
-        function renderSentences() {
-            const container = document.getElementById('content-container');
-            const completionArea = document.getElementById('completion-area');
-            
+        // 渲染句子
+        function renderContent() {
+            const wrapper = document.getElementById('sentences-wrapper');
+            let html = '';
             sentenceData.forEach((item, index) => {
-                const el = document.createElement('div');
-                el.className = 'sentence-item';
-                el.id = `sentence-${index}`;
-                el.innerHTML = `
-                    <div class="pinyin">${item.pinyin}</div>
-                    <div class="chinese-text">${item.text}</div>
-                    <div class="controls">
-                        <button class="play-btn" onclick="togglePlay(${index})">▶</button>
+                html += `
+                    <div class="sentence-container" id="sentence-${index}">
+                        <div class="pinyin">${item.pinyin}</div>
+                        <div class="hanzi">${item.text}</div>
+                        <div class="controls-row">
+                            <button class="play-btn" id="btn-${index}" onclick="togglePlay(${index})">
+                                <span class="icon">▶</span> <span class="text">播放</span>
+                            </button>
+                        </div>
                     </div>
                 `;
-                container.insertBefore(el, completionArea);
             });
+            wrapper.innerHTML = html;
         }
 
-        function renderTracker() {
-            const track = document.getElementById('tracker-track');
-            track.innerHTML = ''; // clear
-            
-            sentenceData.forEach((_, index) => {
-                const star = document.createElement('span');
-                star.className = 'star';
-                star.innerHTML = '★'; // Solid star, color controlled by CSS
-                star.id = `star-${index}`;
-                // Initially hollow appearance via CSS color (gray)
-                track.appendChild(star);
-            });
-
-            // Add Trophy
-            const trophy = document.createElement('span');
-            trophy.className = 'trophy';
-            trophy.id = 'trophy';
-            trophy.innerHTML = '🏆';
-            track.appendChild(trophy);
+        // 渲染底部軌道 - 修正星星與獎杯的連接
+        function renderRewardTrack() {
+            const track = document.getElementById('reward-track');
+            let html = '';
+            for (let i = 0; i < sentenceData.length; i++) {
+                html += `<div class="star-wrapper">
+                            <div class="star" id="star-${i}">★</div>
+                            <!-- 每個星星後面都跟一條線，最後一顆星星的線將連接獎杯 -->
+                            <div class="track-line"></div>
+                         </div>`;
+            }
+            // 獎杯緊接在最後一個 track-line 之後
+            html += `<div class="trophy">🏆</div>`;
+            track.innerHTML = html;
         }
 
-        // --- Audio Control Logic ---
-        window.togglePlay = function(index) {
-            // If clicking the same button that is currently active
+        // 登錄邏輯
+        function checkLogin() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const msg = document.getElementById('login-msg');
+
+            if (!user) {
+                msg.textContent = "請輸入名字";
+                return;
+            }
+            if (pass === "vtcpsc") {
+                currentUser = user;
+
+                // 保險機制：如果因為資源載入等問題尚未渲染，在這裡強制補渲染
+                const wrapper = document.getElementById('sentences-wrapper');
+                const track = document.getElementById('reward-track');
+                if (wrapper && wrapper.children.length === 0) {
+                    renderContent();
+                }
+                if (track && track.children.length === 0) {
+                    renderRewardTrack();
+                }
+
+                adjustPadding();
+
+                document.getElementById('login-overlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-overlay').style.display = 'none';
+                    // 登錄動畫結束後再次調整佈局，確保萬無一失
+                    adjustPadding();
+                }, 300);
+            } else {
+                msg.textContent = "請輸入正確密碼";
+            }
+        }
+
+        // 播放控制邏輯
+        function togglePlay(index) {
+            const btn = document.getElementById(`btn-${index}`);
+            const btnText = btn.querySelector('.text');
+            const btnIcon = btn.querySelector('.icon');
+
+            // 如果點擊的是當前正在播放/暫停的句子
             if (playingIndex === index) {
-                if (currentAudio.paused) {
-                    resumeAudio();
+                if (isPlaying) {
+                    // 暫停
+                    audioPlayer.pause();
+                    isPlaying = false;
+                    btn.classList.add('paused'); // 變色
+                    btnText.textContent = "繼續";
+                    btnIcon.textContent = "❚❚";
                 } else {
-                    pauseAudio();
+                    // 繼續播放（如果已經結束了，則是重播）
+                    // 加一點緩衝 (0.1s) 避免誤差
+                    if (audioPlayer.currentTime >= sentenceData[index].start + sentenceData[index].duration - 0.1) {
+                         audioPlayer.currentTime = sentenceData[index].start;
+                    }
+                    audioPlayer.play();
+                    isPlaying = true;
+                    btn.classList.remove('paused');
+                    btnText.textContent = "暫停";
+                    btnIcon.textContent = "❚❚";
                 }
             } else {
-                // Clicking a new button
-                playSentence(index);
+                // 點擊了新的句子
+                resetAllButtons(); // 重置其他按鈕
+                playingIndex = index;
+                audioPlayer.currentTime = sentenceData[index].start;
+                audioPlayer.play();
+                isPlaying = true;
+                
+                // 更新UI
+                btn.classList.remove('paused');
+                btnText.textContent = "暫停";
+                btnIcon.textContent = "❚❚";
+                
+                // 高亮當前句子
+                document.querySelectorAll('.sentence-container').forEach(el => el.classList.remove('playing'));
+                document.getElementById(`sentence-${index}`).classList.add('playing');
             }
-        };
 
-        function playSentence(index) {
-            // Reset previous button if exists
-            if (playingIndex !== -1 && playingIndex !== index) {
-                updatePlayButtonUI(playingIndex, false);
-            }
+            // 啟動監聽器
+            if (checkInterval) clearInterval(checkInterval);
+            checkInterval = setInterval(checkProgress, 50);
+        }
 
-            playingIndex = index;
-            const data = sentenceData[index];
-            
-            // If we have accurate data, use it. Otherwise just start.
-            currentAudio.currentTime = data.start;
-            currentAudio.play();
-            updatePlayButtonUI(index, true);
+        function checkProgress() {
+            if (playingIndex === -1) return;
 
-            // Start monitoring time
-            if (checkTimeInterval) clearInterval(checkTimeInterval);
-            
-            checkTimeInterval = setInterval(() => {
-                // Stop if we reach the end of the segment
-                if (currentAudio.currentTime >= data.end) {
-                    currentAudio.pause();
-                    clearInterval(checkTimeInterval);
-                    onSentenceFinished(index);
+            const currentData = sentenceData[playingIndex];
+            const endTime = currentData.start + currentData.duration;
+
+            // 檢查是否播放完該句
+            if (audioPlayer.currentTime >= endTime) {
+                audioPlayer.pause();
+                isPlaying = false;
+                
+                // 更新UI為"重播"狀態
+                const btn = document.getElementById(`btn-${playingIndex}`);
+                if (btn) {
+                    btn.querySelector('.text').textContent = "重播";
+                    btn.querySelector('.icon').textContent = "↻";
+                    btn.classList.remove('paused');
                 }
-            }, 50); // check every 50ms
-        }
-
-        function pauseAudio() {
-            currentAudio.pause();
-            isPaused = true;
-            if (playingIndex !== -1) {
-                const btn = document.querySelector(`#sentence-${playingIndex} .play-btn`);
-                if(btn) btn.innerHTML = '▶'; // Show Play icon
+                
+                // 標記完成
+                markSentenceComplete(playingIndex);
+                
+                // 停止監聽
+                clearInterval(checkInterval);
             }
         }
 
-        function resumeAudio() {
-            currentAudio.play();
-            isPaused = false;
-            if (playingIndex !== -1) {
-                const btn = document.querySelector(`#sentence-${playingIndex} .play-btn`);
-                if(btn) btn.innerHTML = '❚❚'; // Show Pause icon
-            }
+        function resetAllButtons() {
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.querySelector('.text').textContent = "播放";
+                btn.querySelector('.icon').textContent = "▶";
+                btn.classList.remove('paused');
+            });
+            isPlaying = false;
         }
 
-        function updatePlayButtonUI(index, isPlaying) {
-            const btn = document.querySelector(`#sentence-${index} .play-btn`);
-            if (!btn) return;
-            
-            if (isPlaying) {
-                btn.innerHTML = '❚❚'; // Pause icon
-                btn.classList.add('playing');
-            } else {
-                btn.innerHTML = '▶';
-                btn.classList.remove('playing');
-            }
-        }
+        function markSentenceComplete(index) {
+            if (!playedSentences[index]) {
+                playedSentences[index] = true;
+                // 點亮星星
+                const star = document.getElementById(`star-${index}`);
+                if (star) star.classList.add('active');
+                
+                // 點亮該星星後面的連接線
+                const wrappers = document.querySelectorAll('.star-wrapper');
+                if (wrappers[index]) {
+                     const line = wrappers[index].querySelector('.track-line');
+                     if (line) line.classList.add('active');
+                }
 
-        function onSentenceFinished(index) {
-            updatePlayButtonUI(index, false);
-            playingIndex = -1;
-            
-            // Mark as played visually
-            const item = document.getElementById(`sentence-${index}`);
-            item.classList.add('played');
-
-            // Update progress
-            if (!progress[index]) {
-                progress[index] = true;
-                updateTracker(index);
+                // 檢查是否全部完成
                 checkAllCompleted();
             }
         }
 
-        function updateTracker(index) {
-            const star = document.getElementById(`star-${index}`);
-            if (star) star.classList.add('active');
-        }
-
         function checkAllCompleted() {
-            const allDone = progress.every(p => p === true);
-            if (allDone) {
-                document.getElementById('trophy').classList.add('active');
-                document.getElementById('completion-area').style.display = 'block';
-                // Scroll to bottom to show button
+            if (playedSentences.every(Boolean)) {
+                // 點亮獎杯
+                document.querySelector('.trophy').classList.add('active');
+                
+                // 激活完成按鈕
+                const finishBtn = document.getElementById('finish-btn');
+                finishBtn.classList.add('active');
+                finishBtn.textContent = "🎉 我已完成跟讀練習啦！";
+                
+                // 自動滾動到底部
                 setTimeout(() => {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 }, 500);
             }
         }
 
-        // --- Completion Logic ---
-        function setupCompletion() {
-            document.getElementById('btn-finish').addEventListener('click', () => {
-                const date = new Date();
-                const dateStr = `${date.getMonth() + 1}月${date.getDate()}日`;
-                const msg = `${userName}已於${dateStr}完成作品3號跟讀練習！`;
+        function handleFinish() {
+            if (!playedSentences.every(Boolean)) return;
+            
+            const now = new Date();
+            const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
+            const textToCopy = `${currentUser}已於${dateStr}完成作品3號跟讀練習！`;
 
-                // Copy to clipboard
-                navigator.clipboard.writeText(msg).then(() => {
-                    document.getElementById('success-modal').style.display = 'flex';
-                }).catch(err => {
-                    // Fallback for some browsers
-                    const textArea = document.createElement("textarea");
-                    textArea.value = msg;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand("copy");
-                    document.body.removeChild(textArea);
-                    document.getElementById('success-modal').style.display = 'flex';
-                });
-            });
-        }
-
-        // --- Developer Mode Logic ---
-        let devModeActive = false;
-        let recordingData = [];
-        let recCurrentIndex = 0;
-
-        function setupDevMode() {
-            const toggle = document.getElementById('dev-toggle');
-            const panel = document.getElementById('dev-panel');
-            const startBtn = document.getElementById('start-rec');
-            const markBtn = document.getElementById('mark-next');
-            const exportBtn = document.getElementById('export-json');
-            const logDiv = document.getElementById('dev-log');
-
-            toggle.addEventListener('click', () => {
-                devModeActive = !devModeActive;
-                panel.style.display = devModeActive ? 'block' : 'none';
-                if(devModeActive) {
-                    // Force player to fixed position or specialized view if needed
-                    // For now, panel overlay is sufficient
-                }
-            });
-
-            startBtn.addEventListener('click', () => {
-                // Initialize recording
-                recordingData = JSON.parse(JSON.stringify(sentenceData)); // clone structure
-                recCurrentIndex = 0;
-                
-                // Start Audio
-                currentAudio.currentTime = 0;
-                currentAudio.play();
-                
-                // UI update
-                highlightDevSentence(0);
-                logDiv.innerHTML = "錄製中... 請在每句話結束時按「空格鍵」";
-                
-                // Set first start time
-                recordingData[0].start = 0;
-            });
-
-            const markAction = (e) => {
-                if (!devModeActive || recCurrentIndex >= recordingData.length) return;
-                
-                // Prevent scrolling with space
-                if (e && e.type === 'keydown' && e.code === 'Space') e.preventDefault(); 
-
-                const now = currentAudio.currentTime;
-                
-                // End current sentence
-                recordingData[recCurrentIndex].end = now;
-                logDiv.innerHTML = `已標記句 ${recCurrentIndex + 1}: ${now.toFixed(2)}s`;
-
-                // Start next sentence if exists
-                if (recCurrentIndex < recordingData.length - 1) {
-                    recCurrentIndex++;
-                    recordingData[recCurrentIndex].start = now;
-                    highlightDevSentence(recCurrentIndex);
-                } else {
-                    currentAudio.pause();
-                    logDiv.innerHTML += "<br><strong>錄製完成！請點擊「複製 JSON」</strong>";
-                }
-            };
-
-            markBtn.addEventListener('click', markAction);
-            document.addEventListener('keydown', (e) => {
-                if(devModeActive && e.code === 'Space') {
-                    markAction(e);
-                }
-            });
-
-            exportBtn.addEventListener('click', () => {
-                // Round numbers for cleanliness
-                const cleanData = recordingData.map(d => ({
-                    text: d.text,
-                    pinyin: d.pinyin,
-                    start: Number(d.start.toFixed(2)),
-                    end: Number(d.end.toFixed(2))
-                }));
-                
-                const jsonStr = JSON.stringify(cleanData, null, 4); // Pretty print
-                navigator.clipboard.writeText(jsonStr);
-                alert("JSON 已複製！請回到代碼中替換 sentenceData 變量。");
-            });
-        }
-
-        function highlightDevSentence(index) {
-            document.querySelectorAll('.sentence-item').forEach(el => el.classList.remove('active-sentence-highlight'));
-            const el = document.getElementById(`sentence-${index}`);
-            if(el) {
-                el.classList.add('active-sentence-highlight');
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                document.getElementById('dev-current-idx').innerText = index + 1;
+            // 複製到剪貼板
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    document.getElementById('modal').style.display = 'flex';
+                }).catch(() => fallbackCopy(textToCopy));
+            } else {
+                fallbackCopy(textToCopy);
             }
         }
+        
+        // 兼容性更好的複製備用方案
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed"; // 避免滾動
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                document.getElementById('modal').style.display = 'flex';
+            } catch (err) {
+                console.error('Copy failed', err);
+                alert("自動複製失敗，請手動截圖分享！");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // --- 開發者模式邏輯 ---
+        let devRecording = false;
+        let devStartTime = 0;
+        let recordedData = [];
+
+        function toggleDevPanel() {
+            const panel = document.getElementById('dev-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function startDevRecording() {
+            devRecording = true;
+            playingIndex = 0; // 重置
+            recordedData = JSON.parse(JSON.stringify(sentenceData)); // 複製結構
+            
+            document.getElementById('btn-record-start').classList.add('recording');
+            document.getElementById('btn-record-start').textContent = "錄製中...";
+            
+            // 從頭開始播放
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+            devStartTime = 0;
+            
+            updateDevInfo();
+            
+            // 鍵盤監聽
+            document.addEventListener('keydown', devKeyHandler);
+        }
+
+        function devKeyHandler(e) {
+            if (e.code === 'Space') {
+                e.preventDefault(); // 防止滾動
+                markNextSentence();
+            }
+        }
+
+        function markNextSentence() {
+            if (!devRecording || playingIndex >= sentenceData.length) return;
+
+            const now = audioPlayer.currentTime;
+            const duration = now - devStartTime;
+            
+            // 記錄當前句子的數據
+            recordedData[playingIndex].start = parseFloat(devStartTime.toFixed(2));
+            recordedData[playingIndex].duration = parseFloat(duration.toFixed(2));
+            
+            console.log(`句 ${playingIndex}: Start ${devStartTime.toFixed(2)}, Dur ${duration.toFixed(2)}`);
+
+            // 準備下一句
+            playingIndex++;
+            devStartTime = now;
+            
+            if (playingIndex >= sentenceData.length) {
+                finishDevRecording();
+            } else {
+                updateDevInfo();
+            }
+        }
+
+        function finishDevRecording() {
+            devRecording = false;
+            audioPlayer.pause();
+            document.getElementById('btn-record-start').classList.remove('recording');
+            document.getElementById('btn-record-start').textContent = "▶ 重新錄製";
+            document.getElementById('dev-text').textContent = "錄製完成！請點擊複製 JSON";
+            document.removeEventListener('keydown', devKeyHandler);
+            alert("錄製完成！請點擊「複製 JSON」並替換源代碼中的變量。");
+        }
+
+        function updateDevInfo() {
+            if (playingIndex < sentenceData.length) {
+                document.getElementById('dev-index').textContent = playingIndex;
+                document.getElementById('dev-text').textContent = sentenceData[playingIndex].text;
+            }
+        }
+
+        function exportJson() {
+            const jsonStr = JSON.stringify(recordedData, null, 4);
+            navigator.clipboard.writeText("var sentenceData = " + jsonStr + ";").then(() => {
+                alert("JSON 已複製！請去代碼中替換 var sentenceData = ... 部分");
+            });
+        }
+
+        // 實時更新開發者面板時間
+        setInterval(() => {
+            if (document.getElementById('dev-panel').style.display !== 'none') {
+                document.getElementById('dev-time').textContent = audioPlayer.currentTime.toFixed(2);
+            }
+        }, 100);
 
     </script>
 </body>
